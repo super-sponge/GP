@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+    <property>
+        <name>enable_mirroring</name>
+        <value>false</value>
+        <description>Configure segment mirroring between nodes.  Possible values are 'true' and 'false'.</description>
+        <value-attributes>
+            <overridable>false</overridable>
+            <editable-only-at-install>true</editable-only-at-install>
+        </value-attributes>
+    </property>
+    <property>
+        <name>mirror_data_directory</name>
+        <value>/data[1-2]/mirror</value>
+        <description>
+            A pattern expresion used to generate the mirror data directories for each segment on a host.
+            Ranges can be specified with [BEGIN-END] where BEGIN and END are positive whole numbers.
+            Ranges will repeat as necessary to create a data directory for each segment on a host.
+            Additionally the current segment's number can be used by referencing {i}.
+        </description>
+        <value-attributes>
+            <overridable>false</overridable>
+            <editable-only-at-install>true</editable-only-at-install>
+        </value-attributes>
+    </property>
+    <property>
+        <name>mirror_port_base</name>
+        <value>50000</value>
+        <description>Beginning value for the segment mirroring ports.</description>
+        <value-attributes>
+            <overridable>false</overridable>
+            <editable-only-at-install>true</editable-only-at-install>
+        </value-attributes>
+    </property>
+    <property>
+        <name>mirror_replication_port_base</name>
+        <value>51000</value>
+        <description>Beginning value for the segment mirror replication ports.</description>
+        <value-attributes>
+            <overridable>false</overridable>
+            <editable-only-at-install>true</editable-only-at-install>
+        </value-attributes>
+    </property>
+</configuration>
