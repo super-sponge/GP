@@ -7,6 +7,7 @@ from textwrap import dedent
 from resource_management import *
 import greenplum_installer
 import utilities
+import greenplum_webcc_installer
 
 def preinstallation_configure(env):
     """Should be run before installation on all hosts."""
@@ -74,17 +75,11 @@ def master_install(env):
 
     create_host_files()
 
-    try:
-        tmp_path = "/tmp/sshpass.rpm"
-        sshpass= path.join(path.dirname(params.installer_location), params.sshpass_location)
-        Logger.info('Downloading sshpass from %s to %s.' % (sshpass, tmp_path))
-        urllib.urlretrieve(sshpass, tmp_path)
-    except IOError:
-        pass
-    Execute('rpm -i --force /tmp/sshpass.rpm')
+    tmp_scp="/tmp/scp.exp"
+    greenplum_webcc_installer.create_scp(tmp_scp)
 
     for host in params.all_nodes:
-        Execute(format("sshpass -p '{params.admin_user_pwd}' scp -o StrictHostKeychecking=no ~/.ssh/id_rsa.pub {params.admin_user}@{host}:~/.ssh/authorized_keys"),
+        Execute(format("expect {tmp_scp} {host} {params.admin_user} {params.admin_user_pwd} ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys"),
         user = params.admin_user)
 
     try:

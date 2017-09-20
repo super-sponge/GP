@@ -1,7 +1,9 @@
 import sys
 import os
+import urllib
 import greenplum
 import utilities
+import greenplum_webcc_installer
 from resource_management import *
 
 class Master(Script):
@@ -33,6 +35,28 @@ class Master(Script):
         except Fail as exception:
             Logger.error("Due to above errors Greenplum gpmon marked failed.")
             raise exception
+
+        webcc_zippath = "/tmp/greenplum-cc-web.zip"
+        # Attempt to locate locallay
+        if not os.path.exists(webcc_zippath):
+            # Attempt to download URL
+            try:
+                Logger.info('Downloading Greenplum from %s to %s.' % (params.webcc_installer_location, webcc_zippath))
+                urllib.urlretrieve(params.webcc_installer_location, webcc_zippath)
+            except IOError:
+                pass
+
+        installexpect = "/tmp/webcc_install.exp"
+        setupexpect = "/tmp/webcc_setup.exp"
+        bin_file = greenplum_webcc_installer.unzip_webcc_package(webcc_zippath, "/tmp")
+        greenplum_webcc_installer.create_webcc_expect(installexpect, bin_file)
+        greenplum_webcc_installer.create_webcc_setup(setupexpect)
+
+        Execute(format("expect {installexpect}"), user = "root");
+        Execute(format("chown -R {params.admin_user}.{params.admin_group} /usr/local/greenplum*"), user = "root");
+        Execute(format("expect {setupexpect}"), user = params.admin_user);
+        #Execute("gpcmdr --start sefon", user = params.admin_user);
+
 
         # Ambari requires service to be in a stopped state after installation
         try:

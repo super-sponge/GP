@@ -87,6 +87,9 @@
                        <packages>
                           <package>
                               <name>ed</name>
+                              <name>expect</name>
+                              <name>tcl</name>
+                              <name>unzip</name>
                           </package>
                        </packages>
                     </osSpecific>

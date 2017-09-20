@@ -21,9 +21,9 @@
         </value-attributes>
     </property>
     <property>
-        <name>sshpass_location</name>
-        <value>sshpass-1.06-1.el6.x86_64.rpm</value>
-        <description>sshpass rpm name</description>
+        <name>webcc_installer_location</name>
+        <value></value>
+        <description>Either a file path or URI to the Greenplum database installation zip.</description>
         <value-attributes>
             <overridable>false</overridable>
             <editable-only-at-install>true</editable-only-at-install>
