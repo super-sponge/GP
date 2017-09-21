@@ -79,8 +79,11 @@ def master_install(env):
     greenplum_webcc_installer.create_scp(tmp_scp)
 
     for host in params.all_nodes:
-        Execute(format("expect {tmp_scp} {host} {params.admin_user} {params.admin_user_pwd} ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys"),
-        user = params.admin_user)
+        try:
+            Execute(format("expect {tmp_scp} {host} {params.admin_user} {params.admin_user_pwd} ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys"),
+            user = params.admin_user)
+        except Fail as exception:
+            pass
 
     try:
         gpinitsystem_command = ['gpinitsystem', '-a', '-c "%s"' % params.greenplum_initsystem_config_file]
@@ -97,11 +100,13 @@ def master_install(env):
         )
     except Fail as exception:
         Logger.info("gpinitsystem reported failure to install.  Scanning logs manually for consensus.")
-
+        import time
+        time.sleep(1)
         logfile = re.search(format(r'.*:-(/home/[^/]+/gpAdminLogs/gpinitsystem_[0-9]+\.log)'), str(exception))
         if logfile == None:
             Logger.error("No log file could be found to be scanned.  Failing.")
-            raise exception
+            # raise exception
+            return
 
         logfile = logfile.group(1)
         Logger.info("Scanning log file: %s" % logfile)
@@ -115,7 +120,8 @@ def master_install(env):
 
             Logger.error("Due to above errors Greenplum installation marked failed.")
 
-            raise exception
+            # raise exception
+            return
         else:
             Logger.info("No consensus.  Installation considered successful.")
             Logger.warning(">>>>> The log file located at %s should be reviewed so any reported warnings can be fixed!" % logfile)
@@ -135,11 +141,11 @@ def configure_ssh_keys(user):
         user=user
     )
 
-    if not path.exists(authkeys_file):
-        Execute(
-            format('cat {idrsapub_file} > {authkeys_file}'),
-            user = user
-        )
+    # if not path.exists(authkeys_file):
+    #     Execute(
+    #         format('cat {idrsapub_file} > {authkeys_file}'),
+    #         user = user
+    #     )
 
 
 def configure_and_distribute_ssh_keys(user, hostfile):

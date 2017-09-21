@@ -15,7 +15,7 @@
                     <name>GREENPLUM_MASTER</name>
                     <displayName>Greenplum Master</displayName>
                     <category>MASTER</category>
-                    <cardinality>0</cardinality>
+                    <cardinality>1</cardinality>
 
                     <commandScript>
                         <script>scripts/master.py</script>
@@ -60,7 +60,7 @@
                     <name>GREENPLUM_SLAVE</name>
                     <displayName>Greenplum Segment</displayName>
                     <category>SLAVE</category>
-                    <cardinality>1+</cardinality>
+                    <cardinality>1</cardinality>
                     <commandScript>
                         <script>scripts/segment.py</script>
                         <scriptType>PYTHON</scriptType>
@@ -85,12 +85,8 @@
                 <osSpecific>
                     <osFamily>any</osFamily>
                        <packages>
-                          <package>
-                              <name>ed</name>
-                              <name>expect</name>
-                              <name>tcl</name>
-                              <name>unzip</name>
-                          </package>
+                           <package><name>expect</name></package>
+                           <package><name>unzip</name></package>
                        </packages>
                     </osSpecific>
             </osSpecifics>
@@ -99,6 +95,12 @@
                 <config-type>greenplum-env</config-type>
                 <config-type>greenplum-mirroring</config-type>
             </configuration-dependencies>
+            <quickLinksConfigurations>
+                <quickLinksConfiguration>
+                    <fileName>quicklinks.json</fileName>
+                    <default>true</default>
+                </quickLinksConfiguration>
+            </quickLinksConfigurations>
         </service>
     </services>
 </metainfo>

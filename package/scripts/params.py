@@ -11,6 +11,7 @@ tmp_dir = Script.get_tmp_dir()
 license_accepted = default('/configurations/greenplum-env/accept_license_agreement', False) == "yes"
 installer_location = config['configurations']['greenplum-env']['installer_location']
 webcc_installer_location = config['configurations']['greenplum-env']['webcc_installer_location']
+webcc_port=config['configurations']['greenplum-env']['port']
 set_kernel_parameters = default('configurations/greenplum-env/set_kernel_parameters', True)
 
 installation_path = config['configurations']['greenplum-env']['installation_path']
@@ -46,6 +47,7 @@ pg_hba_appendable_data = default('configurations/greenplum-hba/pg_hba.contents',
 
 # Commands
 source_cmd = 'source %s;' % path.join(absolute_installation_path, 'greenplum_path.sh')
+source_cc_cmd = "source /usr/local/greenplum-cc-web/gpcc_path.sh"
 
 # Import file paths
 security_conf_file = "/etc/security/limits.d/greenplum.conf"

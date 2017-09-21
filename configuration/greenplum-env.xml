@@ -189,5 +189,14 @@
             <editable-only-at-install>true</editable-only-at-install>
         </value-attributes>
     </property>
+    <property>
+        <name>port</name>
+        <value>28081</value>
+        <description>webcc port</description>
+        <value-attributes>
+            <overridable>false</overridable>
+            <editable-only-at-install>true</editable-only-at-install>
+        </value-attributes>
+    </property>
 
 </configuration>

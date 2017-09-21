@@ -17,7 +17,7 @@ class Master(Script):
         if os.path.exists(params.master_data_segment_directory):
             Logger.info("Found master data directory.  Assuming Greenplum already installed.")
             return
-
+        env.set_params(params)
         self.install_packages(env)
 
         greenplum.preinstallation_configure(env)
@@ -32,6 +32,7 @@ class Master(Script):
         time.sleep(10);
         try:
             Execute(params.source_cmd + format(" gpperfmon_install  --enable --password {params.gpmon_password}  --port {params.master_port}"), user = params.admin_user);
+            Execute(params.source_cmd + "gpstop -u",user=params.admin_user)
         except Fail as exception:
             Logger.error("Due to above errors Greenplum gpmon marked failed.")
             raise exception
@@ -45,18 +46,16 @@ class Master(Script):
                 urllib.urlretrieve(params.webcc_installer_location, webcc_zippath)
             except IOError:
                 pass
+        webcc_installer = greenplum_webcc_installer.GreenplumWebCCInstaller(webcc_zippath)
+        webcc_installer.unzip_web_package()
 
-        installexpect = "/tmp/webcc_install.exp"
-        setupexpect = "/tmp/webcc_setup.exp"
-        bin_file = greenplum_webcc_installer.unzip_webcc_package(webcc_zippath, "/tmp")
-        greenplum_webcc_installer.create_webcc_expect(installexpect, bin_file)
-        greenplum_webcc_installer.create_webcc_setup(setupexpect)
-
-        Execute(format("expect {installexpect}"), user = "root");
+        Execute(webcc_installer.install_webcc_cmd(), user = "root");
         Execute(format("chown -R {params.admin_user}.{params.admin_group} /usr/local/greenplum*"), user = "root");
-        Execute(format("expect {setupexpect}"), user = params.admin_user);
-        #Execute("gpcmdr --start sefon", user = params.admin_user);
 
+        webcc_setup = webcc_installer.setup_webcc_cmd(params.webcc_port)
+        Execute(format("chmod 744 {webcc_setup}"), user = "root")
+        Execute(params.source_cc_cmd + " : " + webcc_setup, user = params.admin_user);
+        Execute(params.source_cc_cmd + " ; gpcmdr --start sefon", user = params.admin_user);
 
         # Ambari requires service to be in a stopped state after installation
         try:
@@ -75,6 +74,10 @@ class Master(Script):
             params.source_cmd + "gpstart -a -v",
             user=params.admin_user
         )
+        Execute(
+            params.source_cc_cmd + " ; gpcmdr --start sefon",
+            user = params.admin_user
+        )
 
     def stop(self, env):
         import params
@@ -86,6 +89,10 @@ class Master(Script):
         Execute(
             params.source_cmd + "gpstop -a -M smart -v",
             user=params.admin_user
+        )
+        Execute(
+            params.source_cc_cmd + " ; gpcmdr --stop sefon",
+            user = params.admin_user
         )
 
     def forcestop(self, env):
