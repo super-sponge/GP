@@ -30,7 +30,7 @@ class Master(Script):
         greenplum.master_install(env)
 
         ## gpmon requires gpdb to be in a running state when installing
-        time.sleep(60)
+        time.sleep(30)
         try:
             Execute(params.source_cmd + format(" gpperfmon_install  --enable --password {params.gpmon_password}  --port {params.master_port}"), user = params.admin_user);
             Execute(params.source_cmd + "gpstop -u",user=params.admin_user)
@@ -52,6 +52,15 @@ class Master(Script):
 
         Execute("expect " + webcc_installer.install_webcc_cmd(), user = "root")
         Execute(format("chown -R {params.admin_user}.{params.admin_group} /usr/local/greenplum*"), user = "root")
+
+        ## restart gpdb for setup web-cc
+        try:
+            Execute(
+                params.source_cmd + "gpstop -a -M smart -v;gpstart -a -v",
+                user=params.admin_user
+            )
+        except ComponentIsNotRunning:
+            pass
 
         webcc_setup = webcc_installer.setup_webcc_cmd(params.webcc_port)
         Execute(format("chmod 744 {webcc_setup}"), user = "root")
