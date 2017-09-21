@@ -65,7 +65,6 @@ class Master(Script):
         webcc_setup = webcc_installer.setup_webcc_cmd(params.webcc_port)
         Execute(format("chmod 744 {webcc_setup}"), user = "root")
         Execute(params.source_cc_cmd + "expect " + webcc_setup, user = params.admin_user)
-        Execute(params.source_cc_cmd + "gpcmdr --start sefon", user = params.admin_user)
 
         # Ambari requires service to be in a stopped state after installation
         try:
