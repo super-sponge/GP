@@ -4,7 +4,7 @@
 <configuration>
     <property>
         <name>accept_license_agreement</name>
-        <value></value>
+        <value>yes</value>
         <description>By setting this value to yes, you aggree you have read and accepted the Greenplum Database license agreenment.  Installation will not occur if value is anything other than 'yes'.</description>
         <value-attributes>
             <overridable>false</overridable>
@@ -13,7 +13,7 @@
     </property>
     <property>
         <name>installer_location</name>
-        <value></value>
+        <value>http://sdc1/x86_64/6/mpp/greenplum-db-4.3.16.0-rhel5-x86_64.zip</value>
         <description>Either a file path or URI to the Greenplum database installation zip.</description>
         <value-attributes>
             <overridable>false</overridable>
@@ -22,7 +22,7 @@
     </property>
     <property>
         <name>webcc_installer_location</name>
-        <value></value>
+        <value>http://sdc1/x86_64/6/mpp/greenplum-cc-web-3.3.0-LINUX-x86_64.zip</value>
         <description>Either a file path or URI to the Greenplum database installation zip.</description>
         <value-attributes>
             <overridable>false</overridable>
@@ -70,7 +70,7 @@
     </property>
     <property>
         <name>database_name</name>
-        <value></value>
+        <value>sefon</value>
         <description>Name of the database to create post installation.</description>
         <value-attributes>
             <overridable>false</overridable>
@@ -79,7 +79,7 @@
     </property>
     <property>
         <name>segments_per_node</name>
-        <value></value>
+        <value>2</value>
         <description>Number of segments to create per node.</description>
         <value-attributes>
             <overridable>false</overridable>
@@ -166,9 +166,9 @@
         <value>true</value>
         <description>Whether to configure parameters in sysctl.conf and limits.conf to the recommended values.</description>
     </property>
-    <property require-input="true">
+    <property require-input="false">
         <name>gpmon_password</name>
-        <value/>
+        <value>gpmon</value>
         <property-type>PASSWORD</property-type>
         <description>password to use against  gpmon</description>
         <value-attributes>
@@ -178,9 +178,9 @@
         </value-attributes>
     </property>
 
-    <property require-input="true">
+    <property require-input="false">
         <name>admin_user_pwd</name>
-        <value/>
+        <value>gpadmin</value>
         <property-type>PASSWORD</property-type>
         <description>password to use against gpadmin</description>
         <value-attributes>

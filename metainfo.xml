@@ -5,15 +5,15 @@
 
     <services>
         <service>
-            <name>GREENPLUM</name>
-            <displayName>Greenplum</displayName>
-            <comment>Pivotal Greenplum</comment>
-            <version>0.0.1</version>
+            <name>MPP</name>
+            <displayName>SEMPP</displayName>
+            <comment>SEFON MPP Database</comment>
+            <version>1.0.0</version>
 
             <components>
                 <component>
                     <name>GREENPLUM_MASTER</name>
-                    <displayName>Greenplum Master</displayName>
+                    <displayName>MPP Master</displayName>
                     <category>MASTER</category>
                     <cardinality>1</cardinality>
 
@@ -45,9 +45,9 @@
 
                 <component>
                     <name>GREENPLUM_STANDBY_MASTER</name>
-                    <displayName>Greenplum Standby</displayName>
+                    <displayName>MPP Standby</displayName>
                     <category>MASTER</category>
-                    <cardinality>1</cardinality>
+                    <cardinality>0-1</cardinality>
 
                     <commandScript>
                         <script>scripts/standby_master.py</script>
@@ -58,9 +58,9 @@
 
                 <component>
                     <name>GREENPLUM_SLAVE</name>
-                    <displayName>Greenplum Segment</displayName>
+                    <displayName>MPP Segment</displayName>
                     <category>SLAVE</category>
-                    <cardinality>1</cardinality>
+                    <cardinality>1+</cardinality>
                     <commandScript>
                         <script>scripts/segment.py</script>
                         <scriptType>PYTHON</scriptType>
@@ -70,7 +70,7 @@
 
                 <component>
                     <name>GREENPLUM_CLIENT</name>
-                    <displayName>Greenplum Client</displayName>
+                    <displayName>MPP Client</displayName>
                     <category>CLIENT</category>
                     <cardinality>1+</cardinality>
                     <commandScript>

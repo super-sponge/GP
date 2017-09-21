@@ -121,11 +121,11 @@ class GreenplumWebCCInstaller(object):
 
     def install_webcc_cmd(self):
         create_webcc_expect(self.__webcc_install_cmd, self.webbin_path())
-        return "expect " + self.__webcc_install_cmd
+        return  self.__webcc_install_cmd
 
     def setup_webcc_cmd(self, port="28080"):
         create_webcc_setup(self.__webcc_setup_cmd, port)
-        return "expect " + self.__webcc_setup_cmd
+        return self.__webcc_setup_cmd
 
     def close(self):
         if self.__delete_file_on_close:
