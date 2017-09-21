@@ -59,10 +59,10 @@ def get_configuration_file(variable_file):
 
 def set_kernel_parameters(parameters, logoutput=True):
     """Given a dictionary of parameters, set each one."""
-
+    Execute("cat /dev/null > /etc/sysctl.conf ", user = "root")
     for key, value in parameters.iteritems():
         set_kernel_parameter(key, value, logoutput=logoutput)
-
+    Execute("sysctl -p", user = "root")
 def set_kernel_parameter(name, value, logoutput=True):
     """Set a kernel paramater vis sysctl, also append to sysctl.conf.
 
@@ -76,7 +76,6 @@ def set_kernel_parameter(name, value, logoutput=True):
 
     try:
         with open('/etc/sysctl.conf', 'a+') as filehandle:
-
             if name not in map(lambda line: line.split('=')[0].strip(), filehandle.readlines()):
                 # Add via sysctl so value will be updated immediately.
                 Execute(format('sysctl -w {name}="{value}"'), logoutput=False)

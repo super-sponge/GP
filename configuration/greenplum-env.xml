@@ -191,7 +191,7 @@
     </property>
     <property>
         <name>port</name>
-        <value>28081</value>
+        <value>28080</value>
         <description>webcc port</description>
         <value-attributes>
             <overridable>false</overridable>

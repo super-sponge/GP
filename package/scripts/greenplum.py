@@ -9,6 +9,7 @@ import greenplum_installer
 import utilities
 import greenplum_webcc_installer
 
+
 def preinstallation_configure(env):
     """Should be run before installation on all hosts."""
 
@@ -26,13 +27,13 @@ def preinstallation_configure(env):
         groups=[params.admin_group],
         action="create", shell="/bin/bash"
     )
-    Execute(format("echo '{params.admin_user_pwd}' | passwd --stdin {params.admin_user}"), user = "root")
+    Execute(format("echo '{params.admin_user_pwd}' | passwd --stdin {params.admin_user}"), user="root")
 
     configure_ssh_keys(params.admin_user)
 
-    Execute("cat /dev/null > ~/.ssh/known_hosts", user = params.admin_user)
+    Execute("cat /dev/null > ~/.ssh/known_hosts", user=params.admin_user)
     for host in params.all_nodes:
-        Execute("ssh-keyscan {0} >> ~/.ssh/known_hosts".format(host), user = params.admin_user)
+        Execute("ssh-keyscan {0} >> ~/.ssh/known_hosts".format(host), user=params.admin_user)
         Logger.info("ssh-keyscan {0} >> ~/.ssh/known_hosts".format(host))
 
     if params.set_kernel_parameters:
@@ -44,6 +45,7 @@ def preinstallation_configure(env):
             owner=params.admin_user, mode=0644
         )
 
+
 def greenplum_package_install(env):
     """Perform install for master and segment"""
 
@@ -51,13 +53,15 @@ def greenplum_package_install(env):
 
     if path.exists(params.absolute_installation_path):
         return
-    with greenplum_installer.GreenplumDistributed.from_source(params.installer_location, params.tmp_dir) as distributed_archive:
+    with greenplum_installer.GreenplumDistributed.from_source(params.installer_location,
+                                                              params.tmp_dir) as distributed_archive:
         with distributed_archive.get_installer() as gp_install_script:
-            version_installation_path = path.join(params.installation_path, 'greenplum-db-%s' % gp_install_script.get_version())
+            version_installation_path = path.join(params.installation_path,
+                                                  'greenplum-db-%s' % gp_install_script.get_version())
             Directory(
                 version_installation_path,
                 action="create",
-                owner=params.admin_user,group=params.admin_group, mode=0755
+                owner=params.admin_user, group=params.admin_group, mode=0755
             )
             gp_install_script.install_to(version_installation_path)
 
@@ -65,6 +69,7 @@ def greenplum_package_install(env):
     Execute("sed -i 's@^GPHOME=.*@GPHOME={0}@' '{1}';".format(version_installation_path, relative_greenplum_path_file))
     source_env = os.environ.copy().update(utilities.get_environment(params.source_cmd))
     Link(params.absolute_installation_path, to=version_installation_path)
+    Execute(format("chown -R {params.admin_user}.{params.admin_group} /usr/local/greenplum*"), user="root")
 
 
 def master_install(env):
@@ -75,13 +80,14 @@ def master_install(env):
 
     create_host_files()
 
-    tmp_scp="/tmp/scp.exp"
+    tmp_scp = "/tmp/scp.exp"
     greenplum_webcc_installer.create_scp(tmp_scp)
 
     for host in params.all_nodes:
         try:
-            Execute(format("expect {tmp_scp} {host} {params.admin_user} {params.admin_user_pwd} ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys"),
-            user = params.admin_user)
+            Execute(format(
+                "expect {tmp_scp} {host} {params.admin_user} {params.admin_user_pwd} ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys"),
+                    user=params.admin_user)
         except Fail as exception:
             pass
 
@@ -94,6 +100,10 @@ def master_install(env):
         if params.mirroring_enabled and params.enable_mirror_spreading:
             gpinitsystem_command.append('-S')
 
+        Execute(
+            params.source_cmd + "gpssh-exkeys -f /usr/local/greenplum-db/greenplum_hosts",
+            user=params.admin_user
+        )
         Execute(
             params.source_cmd + " ".join(gpinitsystem_command),
             user=params.admin_user
@@ -124,7 +134,9 @@ def master_install(env):
             return
         else:
             Logger.info("No consensus.  Installation considered successful.")
-            Logger.warning(">>>>> The log file located at %s should be reviewed so any reported warnings can be fixed!" % logfile)
+            Logger.warning(
+                ">>>>> The log file located at %s should be reviewed so any reported warnings can be fixed!" % logfile)
+
 
 def configure_ssh_keys(user):
     """Configure  ssh-keys"""
@@ -209,7 +221,9 @@ def configure_and_distribute_ssh_keys(user, hostfile):
 
 def refresh_pg_hba_file():
     import params
-    utilities.add_block_to_file(params.pg_hba_file, InlineTemplate(params.pg_hba_appendable_data).get_content(), 'zdata-gp')
+    utilities.add_block_to_file(params.pg_hba_file, InlineTemplate(params.pg_hba_appendable_data).get_content(),
+                                'zdata-gp')
+
 
 def create_host_files():
     """Create segment and all host files in greenplum absolute installation path."""
@@ -228,6 +242,7 @@ def create_host_files():
         owner=params.admin_user, mode=0644
     )
 
+
 def create_master_data_directory():
     """Create the master data directory, append relevant environment variable to admin user."""
 
@@ -236,13 +251,15 @@ def create_master_data_directory():
     Directory(
         params.master_data_directory,
         action="create",
-        create_parents = True,
+        create_parents=True,
         recursive_ownership=True,
         owner=params.admin_user,
         group=params.admin_group
     )
 
-    utilities.append_bash_profile(params.admin_user, 'export MASTER_DATA_DIRECTORY="%s";' % params.master_data_segment_directory)
+    utilities.append_bash_profile(params.admin_user,
+                                  'export MASTER_DATA_DIRECTORY="%s";' % params.master_data_segment_directory)
+
 
 def create_gpinitsystem_config(user, destination):
     """Create gpinitsystem_config file."""
@@ -251,7 +268,7 @@ def create_gpinitsystem_config(user, destination):
     Directory(
         path.dirname(destination),
         action="create",
-        create_parents = True,
+        create_parents=True,
         recursive_ownership=True,
         owner=user
     )
@@ -261,18 +278,22 @@ def create_gpinitsystem_config(user, destination):
         owner=user, mode=0644
     )
 
+
 def add_psql_variables(user=None):
     import params
 
     if user == None:
         user = params.admin_user
 
-    utilities.append_bash_profile(user, "source %s;" % path.join(params.absolute_installation_path, 'greenplum_path.sh'))
+    utilities.append_bash_profile(user,
+                                  "source %s;" % path.join(params.absolute_installation_path, 'greenplum_path.sh'))
     utilities.append_bash_profile(user, 'export PGPORT="%s";' % params.master_port)
     utilities.append_bash_profile(user, 'export PGDATABASE="%s";' % params.database_name)
 
+
 def is_running(pid_file):
     return utilities.is_process_running(pid_file, lambda filehandle: int(filehandle.readlines()[0]))
+
 
 def scan_installation_logs(logFile, minimum_error_level='info'):
     """Given a log file, return if there are any log lines with an error level above minimum_error_level."""
@@ -300,6 +321,7 @@ def scan_installation_logs(logFile, minimum_error_level='info'):
     error_lines = remove_lines_between_delimiter(error_lines)
 
     return error_lines
+
 
 def remove_lines_between_delimiter(lines, delimiter=r".*:-\*+$"):
     """Given a list of lines, remove all lines in between lines which match the given delimiter pattern, including the delimiter lines."""

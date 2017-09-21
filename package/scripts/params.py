@@ -47,7 +47,7 @@ pg_hba_appendable_data = default('configurations/greenplum-hba/pg_hba.contents',
 
 # Commands
 source_cmd = 'source %s;' % path.join(absolute_installation_path, 'greenplum_path.sh')
-source_cc_cmd = "source /usr/local/greenplum-cc-web/gpcc_path.sh"
+source_cc_cmd = "source /usr/local/greenplum-cc-web/gpcc_path.sh;"
 
 # Import file paths
 security_conf_file = "/etc/security/limits.d/greenplum.conf"
