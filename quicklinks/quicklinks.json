@@ -1,0 +1,37 @@
+{
+  "name": "default",
+  "description": "Quick links",
+  "configuration": {
+    "protocol": {
+      "type":"HTTP_ONLY"
+    },
+
+    "links": [
+      {
+        "name": "webcc",
+        "label": "webcc",
+        "requires_user_name": "false",
+        "component_name": "GREENPLUM_MASTER",
+        "url":"%@://%@:%@",
+        "port": {
+          "http_property": "port",
+          "http_default_port": "28080",
+          "https_property": "port",
+          "https_default_port": "28080",
+          "regex": "^(\\d+)$",
+          "site": "greenplum-env"
+        },
+        "protocol":{
+          "type":"https",
+          "checks":[
+            {
+              "property":"protocol",
+              "desired":"https",
+              "site":"greenplum-env"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
