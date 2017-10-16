@@ -52,6 +52,7 @@ class Master(Script):
 
         Execute("expect " + webcc_installer.install_webcc_cmd(), user = "root")
         Execute(format("chown -R {params.admin_user}.{params.admin_group} /usr/local/greenplum*"), user = "root")
+        Execute(format("chmod u+x -R /usr/local/greenplum*"), user = params.admin_user)
 
         ## restart gpdb for setup web-cc
         try:

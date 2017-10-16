@@ -82,6 +82,8 @@ def unzip_webcc_package(zip_path, bin_path):
             print ("unzip " + zip_path)
             zipf.extractall(bin_path)
         return os.path.join(bin_path, file_name)
+    else:
+        return zip_path
 
 
 class GreenplumWebCCInstaller(object):
